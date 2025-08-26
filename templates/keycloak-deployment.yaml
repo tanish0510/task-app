@@ -36,8 +36,6 @@ spec:
           command: ["/opt/keycloak/bin/kc.sh"]
           args: ["start", "--auto-build"]
           env:
-            - name: KC_DB
-              value: "dev-file"
             - name: KC_HTTP_PORT
               value: "8080"
             - name: KC_HEALTH_ENABLED
