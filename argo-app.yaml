@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/your-username/task-app.git
+    repoURL: https://github.com/tanish0510/task-app
     targetRevision: HEAD
     path: .
   destination:
