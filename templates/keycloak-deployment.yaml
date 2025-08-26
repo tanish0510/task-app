@@ -23,7 +23,20 @@ spec:
               containerPort: 8080
               protocol: TCP
           command: ["/opt/keycloak/bin/kc.sh"]
-          args: ["start", "--auto-build"]
+          args: ["start"]
+          env:
+            - name: KC_DB
+              value: "dev-file"
+            - name: KC_HTTP_PORT
+              value: "8080"
+            - name: KC_HEALTH_ENABLED
+              value: "true"
+            - name: KC_PROXY
+              value: "edge"
+          envFrom:
+            - secretRef:
+                name: {{ include "task-app.fullname" . }}-keycloak-admin-secret
+
 ---
 apiVersion: v1
 kind: Service
