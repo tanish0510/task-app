@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "task-app.fullname" . }}-keycloak-admin-secret
+  labels:
+    {{- include "task-app.labels" . | nindent 4 }}
+type: Opaque
+stringData:
+  KEYCLOAK_ADMIN: {{ .Values.keycloak.adminUser.name }}
+  KEYCLOAK_ADMIN_PASSWORD: {{ .Values.keycloak.adminUser.password }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "task-app.fullname" . }}-keycloak
+  labels:
+    {{- include "task-app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.keycloak.replicaCount }}
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: "{{ .Values.keycloak.image.repository }}:{{ .Values.keycloak.image.tag }}"
+          imagePullPolicy: {{ .Values.keycloak.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: KC_DB
+              value: "dev-file"
+            - name: KC_HTTP_PORT
+              value: "8080"
+            - name: KC_HEALTH_ENABLED
+              value: "true"
+            - name: KC_PROXY
+              value: "edge"
+          envFrom:
+            - secretRef:
+                name: {{ include "task-app.fullname" . }}-keycloak-admin-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "task-app.fullname" . }}-keycloak
+  labels:
+    {{- include "task-app.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.keycloak.service.type }}
+  ports:
+    - port: {{ .Values.keycloak.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: keycloak

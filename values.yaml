@@ -1,0 +1,24 @@
+# Redis Configuration
+redis:
+  replicaCount: 1
+  image:
+    repository: redis
+    tag: "7.0.5"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 6379
+
+# Keycloak Configuration
+keycloak:
+  replicaCount: 1
+  image:
+    repository: quay.io/keycloak/keycloak
+    tag: "21.0.1"
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 8080
+  adminUser:
+    name: "admin"
+    password: "adminpassword"
